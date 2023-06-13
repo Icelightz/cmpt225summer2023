@@ -5,9 +5,9 @@
 // Student Info
 // ------------
 //
-// Name : <put your full name here!>
-// St.# : <put your full SFU student number here>
-// Email: <put your SFU email address here>
+// Name : Hugo Zhou
+// St.# : 301546101
+// Email: hugozgg778@gmail.com
 //
 //
 // Statement of Originality
@@ -88,6 +88,68 @@ class Stringlist
             arr = temp;
         }
     }
+/**/
+    // private stack
+    class Stack {
+        //nodes of linked list
+        struct Node {
+            Stringlist* data;
+            Node* next;
+        };
+
+        Node* head = nullptr;
+
+        public:
+
+        Stack() {}  //default constructor
+
+        bool empty() const {
+            return head == nullptr;
+        }
+
+        void push(const Stringlist &s) {
+            Node* n = new Node;
+            Stringlist* temp = new Stringlist(s);
+            n->data = temp;
+            n->next = head;
+            head = n;
+        }
+
+        Stringlist& top() {
+            if (empty()) {
+                //error
+                cout << "top(): reading empty stack" << endl;
+                exit(0);
+            }
+            else {
+                return *head->data;
+            }
+        }
+
+        void pop() {
+            if (empty()) {
+                //error
+            }
+            else {
+                Node* temp = head;
+                head = head->next;
+                delete temp->data;
+                delete temp;
+            }
+        }
+
+        //helper function to delete linked list
+        void clear() {
+            while (!empty()) {
+                pop();
+            }
+        }
+
+        ~Stack() { clear(); }
+    };
+/**/
+    // undo stack
+    Stack undoStack;
 
 public:
     //
@@ -141,6 +203,7 @@ public:
     {
         if (this != &other)
         {
+            undoStack.push(*this);
             delete[] arr;
             cap = other.capacity();
             arr = new string[cap];
@@ -221,6 +284,7 @@ public:
     void set(int index, string value)
     {
         check_bounds("set", index);
+        undoStack.push(*this);
         arr[index] = value;
     }
 
@@ -234,6 +298,7 @@ public:
     {
         if (index < 0 || index > sz) // allows insert at end, i == sz
             bounds_error("insert_before");
+        undoStack.push(*this);
         check_capacity();
 
         for (int i = sz; i > index; i--)
@@ -274,6 +339,7 @@ public:
     void remove_at(int index)
     {
         check_bounds("remove_at", index);
+        undoStack.push(*this);
         for (int i = index; i < sz - 1; i++)
         {
             arr[i] = arr[i + 1];
@@ -288,9 +354,17 @@ public:
     //
     void remove_all()
     {
+        undoStack.push(*this);
         while (sz > 0)
         {
-            remove_at(sz - 1);
+            int index = sz - 1;
+            check_bounds("remove_at", index);
+            undoStack.push(*this);
+            for (int i = index; i < sz - 1; i++)
+            {
+                arr[i] = arr[i + 1];
+            }
+            sz--;
         }
     }
 
@@ -317,14 +391,18 @@ public:
     //
     bool undo()
     {
-        cout << "Stringlist::undo: not yet implemented\n";
+        if (!undoStack.empty()) {
+            *this=undoStack.top();
+            undoStack.pop();
+        }
+        //cout << "Stringlist::undo: not yet implemented\n";
         return false;
     }
 
 }; // class Stringlist
 
 //
-// Prints list to in the format {"a", "b", "c"}.
+// Prints list in the format {"a", "b", "c"}.
 //
 ostream &operator<<(ostream &os, const Stringlist &lst)
 {
