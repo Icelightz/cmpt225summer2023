@@ -5,9 +5,9 @@
 // Student Info
 // ------------
 //
-// Name : <put your full name here!>
-// St.# : <put your full SFU student number here>
-// Email: <put your SFU email address here>
+// Name : Hugo Zhou
+// St.# : 301546101
+// Email: hhz1@sfu.ca
 //
 //
 // Statement of Originality
@@ -38,9 +38,11 @@
 using namespace std;
 
 
-class Queue : public Queue_base<Announcement>
+class Queue : public Queue_base<Announcement> 
 {
 private:
+
+    // internal data
     struct Node 
     {
         Announcement data;
@@ -52,69 +54,133 @@ private:
     int current_size = 0;
 
     //helper functions
-
+    void clear() 
+    {
+        while(!empty()) {
+            dequeue();
+        }
+    }
 
 public:
+
     Queue() {}     // default constructor
-    ~Queue() {}    // default destructor
 
-    // methods
+    ~Queue() { clear(); }    //  destructor
+
+
+
+    // selectors    -------------------
+
     bool empty() const { return head==nullptr; }
-    const Announcement &front() const { return head->data; }
-
-    void enqueue(const Announcement &item);
-    void dequeue();
-
-    // selectors
+    
     int size() const { return current_size; }
 
-    // output
+    const Announcement &front() const;
+
+
+
+    // mutators    -------------------
+ 
+    // empty: head, tail, size
+    // !empty: tail, size, connect (means link item)
+    void enqueue(const Announcement &item);
+
+    // empty: throws exception
+    // !empty:  size, head, tail
+    void dequeue();
+
+
+
+    // output    -------------------
+
+    // empty: print "{ }"
+    // !empty: print all items
     friend ostream& operator<<(ostream& out, const Queue& s);
 
 };
 
-void Queue::enqueue(const Announcement &item) {
+const Announcement &Queue::front() const 
+{
+    if (empty())
+    {
+        throw runtime_error("front: queue is empty");
+    }
+    else
+    {
+        return head->data;
+    }
+}
+
+void Queue::enqueue(const Announcement &item) 
+{
     Node* n = new Node{ Announcement(item) };
-    if (empty()) {     //queue empty
+    if (empty()) 
+    {     //queue empty
         head = n;
         tail = n;
     }
-    else {      //queue not empty
+    else 
+    {      //queue not empty
         tail->next = n;
+        tail=n;
     }
     current_size++; //size change
 }
 
-void Queue::dequeue() {
-    if (!empty()) {     // queue not empty
-        Node* tmp = head;
-        head = head->next;
-        delete tmp;
+void Queue::dequeue() 
+{
+    if (empty())
+    {      // queue empty
+        throw runtime_error("dequeue: queue is empty");
     }
-    else {      // queue empty
-        cerr << "error: attempting to dequeue empty queue" << endl;
+    else 
+    {     // queue not empty
+        if (current_size==1) 
+        {   // 1 item left
+            delete head;
+            head = nullptr;
+            tail = nullptr;
+        }
+        else 
+        {   // more than 1 item left
+            Node* tmp = head;
+            head = head->next;
+            delete tmp;
+        }
+
+        current_size--;     // change size
     }
-    current_size--;     // size change
 }
 
-ostream& operator<<(ostream& out, const Queue& s) {
+ostream& operator<<(ostream& out, const Queue& s)
+{
     Queue::Node* current = s.head;
     if (!s.empty()) {   // queue not empty
-        for (int i=0; i < s.current_size; i++) {
+        for (int i=0; i < s.current_size; i++) 
+        {
             cout << current->data << "   ";
             current = current->next;
         }
         cout << endl;
     }
-    else {      // queue empty
+    else 
+    {      // queue empty
         cout << "{ }" << endl;
     }
     return out;
 }
 
+
 class JingleNet
 {
 private:
+    Queue snowman; // lowest rank
+    Queue elf1;
+    Queue elf2;
+    Queue reindeer;
+    Queue santa;       // highest rank
+    Queue* list[5] = { &snowman, &elf1, &elf2, &reindeer, &santa };
+
     
 
 public:
@@ -125,6 +191,12 @@ public:
 
 int main(int argc, char const *argv[])
 {
+    if (argc==1) {
+
+    }
+    if (argv[0]==nullptr) {
+
+    }
     cout << "Welcome to Assignment 3!" << endl;
 
     Announcement a1("yumyum", Rank::SANTA, "I love Christmas!");
@@ -138,9 +210,14 @@ int main(int argc, char const *argv[])
     cout << q1 << endl;
     q1.dequeue();
     cout << q1 << endl;
-    q1.dequeue();
-    cout << q1 << endl;
-    q1.dequeue();
 
+    cout << "front is: " << q1.front() << endl;
 
+    JingleNet j1;
+
+    //Queue& test1 = *j1.list[int(Rank::SNOWMAN)-1];
+    //j1.snowman.enqueue(a1);
+    //cout << test1 << endl;
+
+    return EXIT_SUCCESS;
 }
