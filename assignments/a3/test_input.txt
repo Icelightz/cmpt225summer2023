@@ -1,0 +1,8 @@
+SEND user1 snowman m1
+SEND user2 santa m2
+SEND user1 reindeer m3
+SEND user3 snowman m4
+SEND user1 reindeer m5
+PROMOTE_ANNOUNCEMENTS user1
+ANNOUNCE 2
+REMOVE_ALL user1

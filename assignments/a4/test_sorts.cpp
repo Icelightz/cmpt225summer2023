@@ -348,6 +348,7 @@ void test_iquick_sort_int()
     v = {2, 1, 0};
     iquick_sort(v);
     assert(is_sorted(v));
+
 }
 
 void test_iquick_sort_string()
@@ -373,8 +374,9 @@ void test_iquick_sort_string()
     assert(is_sorted(v));
 }
 
+
 int main()
-{
+{   
     test_is_sorted_int();
     test_is_sorted_string();
 

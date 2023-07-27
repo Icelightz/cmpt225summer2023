@@ -32,6 +32,8 @@ int main(int argc, char *argv[])
     string filename = argv[1];
     cout << "Printing " << filename << " ..." << endl;
     ifstream infile(filename);
+    infile.open(filename);
+
     string line;
     int num_lines = 0;
     while (getline(infile, line))
@@ -39,5 +41,6 @@ int main(int argc, char *argv[])
         num_lines++;
         cout << "line " << num_lines << ": " << line << endl;
     }
+    
 
 } // main
